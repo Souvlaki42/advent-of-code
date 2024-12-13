@@ -13,13 +13,24 @@ My advent of code solutions starting from 2024. I'm using rust. I might do previ
 > [!WARNING]
 > I'm not responsible for any consequences of using this repo. Use it at your own risk.
 
+# Challenges
+
+| Year | Day | Solution           |
+| ---- | --- | ------------------ |
+| 2024 | 1   | [Day 1](2024/day1) |
+| 2024 | 2   | [Day 2](2024/day2) |
+| 2024 | 3   | [Day 3](2024/day3) |
+| 2024 | 4   | [Day 4](2024/day4) |
+| 2024 | 5   | [Day 5](2024/day5) |
+| 2024 | 6   | [Day 6](2024/day6) |
+| 2024 | 7   | [Day 7](2024/day7) |
+| 2024 | 8   | [Day 7](2024/day8) |
+
 ## How to run
 
 - Install [rust](https://www.rust-lang.org/tools/install)
 - Install [just](https://github.com/casey/just#installation)
-- Download your input files from the [advent of code website](https://adventofcode.com), name them `input.txt` and place them in the `bin` folder of the `[year]/[day]/src` folder you want to run
-- Run `just gen [year] [day]` to generate the project for a specific day and year
-- Run `just run [year] [day] [part]` to run the solution for a specific part, day and year
+- See each day's readme for further instructions
 
 ## License
 
