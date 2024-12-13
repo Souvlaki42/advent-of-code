@@ -1,3 +1,3 @@
 fn main() {
-    println!("part2 output");
+    println!("Part 2: TODO");
 }

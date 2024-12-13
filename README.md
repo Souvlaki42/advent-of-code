@@ -17,7 +17,7 @@ My advent of code solutions starting from 2024. I'm using rust. I might do previ
 
 - Install [rust](https://www.rust-lang.org/tools/install)
 - Install [just](https://github.com/casey/just#installation)
-- Download your input files from the [advent of code website](https://adventofcode.com), name them `input.txt` and place them in the `bin` folder of the [year]/[day]/src folder you want to run
+- Download your input files from the [advent of code website](https://adventofcode.com), name them `input.txt` and place them in the `bin` folder of the `[year]/[day]/src` folder you want to run
 - Run `just gen [year] [day]` to generate the project for a specific day and year
 - Run `just run [year] [day] [part]` to run the solution for a specific part, day and year
 
