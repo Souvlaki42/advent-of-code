@@ -24,15 +24,15 @@ My advent of code solutions starting from 2024. I'm using rust. I might do previ
 | 2024 | 5   | [Day 5](2024/day5) |
 | 2024 | 6   | [Day 6](2024/day6) |
 | 2024 | 7   | [Day 7](2024/day7) |
-| 2024 | 8   | [Day 7](2024/day8) |
+| 2024 | 8   | [Day 8](2024/day8) |
 
 ## How to run
 
 - Install [rust](https://www.rust-lang.org/tools/install)
-- Install [just](https://github.com/casey/just#installation)
+- Install [just](https://github.com/casey/just#installation) (my justfile only works with windows powershell)
 - See each day's readme for further instructions
 
 ## License
 
-[MIT](LICENSE)
+[Apache 2.0](LICENSE)
 
