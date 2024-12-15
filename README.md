@@ -15,17 +15,18 @@ My advent of code solutions starting from 2024. I'm using rust. I might do previ
 
 # Challenges
 
-| Year | Day | Solution           |
-| ---- | --- | ------------------ |
-| 2024 | 1   | [Day 1](2024/day1) |
-| 2024 | 2   | [Day 2](2024/day2) |
-| 2024 | 3   | [Day 3](2024/day3) |
-| 2024 | 4   | [Day 4](2024/day4) |
-| 2024 | 5   | [Day 5](2024/day5) |
-| 2024 | 6   | [Day 6](2024/day6) |
-| 2024 | 7   | [Day 7](2024/day7) |
-| 2024 | 8   | [Day 8](2024/day8) |
-| 2024 | 9   | [Day 9](2024/day9) |
+| Year | Day | Solution             |
+| ---- | --- | -------------------- |
+| 2024 | 1   | [Day 1](2024/day1)   |
+| 2024 | 2   | [Day 2](2024/day2)   |
+| 2024 | 3   | [Day 3](2024/day3)   |
+| 2024 | 4   | [Day 4](2024/day4)   |
+| 2024 | 5   | [Day 5](2024/day5)   |
+| 2024 | 6   | [Day 6](2024/day6)   |
+| 2024 | 7   | [Day 7](2024/day7)   |
+| 2024 | 8   | [Day 8](2024/day8)   |
+| 2024 | 9   | [Day 9](2024/day9)   |
+| 2024 | 10  | [Day 10](2024/day10) |
 
 ## How to run
 
