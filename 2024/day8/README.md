@@ -16,4 +16,4 @@ Run:
 just run 2024 8 part2
 ```
 
-## Go back to [main repository's root](../README.md)
+## Go back to [main repository's root](/)

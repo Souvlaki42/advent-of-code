@@ -31,6 +31,7 @@ My advent of code solutions starting from 2024. I'm using rust. I might do previ
 
 - Install [rust](https://www.rust-lang.org/tools/install)
 - Install [just](https://github.com/casey/just#installation)
+- (Optional) Install [cargo-generate](https://github.com/cargo-generate/cargo-generate#installation)
 - See each day's readme for further instructions
 
 ## License
