@@ -27,6 +27,7 @@ My advent of code solutions starting from 2024. I'm using rust. I might do previ
 | 2024 | 8   | [Day 8](2024/day8)   |
 | 2024 | 9   | [Day 9](2024/day9)   |
 | 2024 | 10  | [Day 10](2024/day10) |
+| 2024 | 11  | [Day 11](2024/day11) |
 
 ## How to run
 
