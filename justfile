@@ -1,6 +1,7 @@
 set windows-powershell := true
 
 run year day part:
+    clear
     cargo run --release --package "file:///{{invocation_directory()}}/{{year}}/day{{day}}" --bin "{{part}}"
 
 gen year day:
