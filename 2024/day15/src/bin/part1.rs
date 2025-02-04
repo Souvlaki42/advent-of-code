@@ -1,31 +1,139 @@
 use std::collections::HashMap;
 
-use rayon::iter::{IndexedParallelIterator, IntoParallelRefIterator};
-
 #[derive(Debug, PartialEq)]
-struct Robot {
-    x: usize,
-    y: usize,
+struct Simulation<'a> {
+    robot: (usize, usize),
+    entities: HashMap<(usize, usize), Entity>,
+    moveset: Vec<Instruction>,
+    input: (&'a str, usize),
 }
 
-impl Robot {
-    fn check_towards(
-        &self,
-        entities: HashMap<(usize, usize), Entity>,
-        direction: &Instruction,
-    ) -> Vec<Entity> {
+#[derive(Debug, PartialEq, Clone, Copy)]
+enum Entity {
+    Wall,
+    Box,
+    Air,
+    Player,
+}
+
+#[derive(Debug, PartialEq, Clone, Copy)]
+enum Instruction {
+    Up,
+    Down,
+    Left,
+    Right,
+}
+
+impl<'a> Simulation<'a> {
+    fn new(file: &'a str) -> Self {
+        let mut entities = HashMap::new();
+        let mut moveset = Vec::new();
+        let mut robot = (0, 0);
+        let mut line_count: usize = 0;
+
+        for (y, line) in file.lines().enumerate() {
+            line_count += 1;
+            for (x, char) in line.chars().enumerate() {
+                match char {
+                    '#' => {
+                        entities.insert((x, y), Entity::Wall);
+                    }
+                    'O' => {
+                        entities.insert((x, y), Entity::Box);
+                    }
+                    '.' => {
+                        entities.insert((x, y), Entity::Air);
+                    }
+                    '@' => {
+                        entities.insert((x, y), Entity::Player);
+                        robot.0 = x;
+                        robot.1 = y;
+                    }
+                    '^' => moveset.push(Instruction::Up),
+                    '<' => moveset.push(Instruction::Left),
+                    '>' => moveset.push(Instruction::Right),
+                    'v' => moveset.push(Instruction::Down),
+                    _ => {}
+                }
+            }
+        }
+
+        Self {
+            robot,
+            entities,
+            moveset,
+            input: (file, line_count),
+        }
+    }
+
+    fn set_pos(&mut self, change_pos: (isize, isize)) {
+        let robot_pos_unwrapped = (
+            isize::try_from(self.robot.0).unwrap_or(0),
+            isize::try_from(self.robot.1).unwrap_or(0),
+        );
+
+        let new_pos = (
+            usize::try_from(robot_pos_unwrapped.0 + change_pos.0)
+                .expect("Robot X isn't a usize anymore..."),
+            usize::try_from(robot_pos_unwrapped.1 + change_pos.1)
+                .expect("Robot Y isn't a usize anymore..."),
+        );
+        if new_pos == self.robot {
+            println!("Robot position didn't changed: {:?}", self.robot);
+            return;
+        }
+
+        self.entities.insert(self.robot, Entity::Air);
+        self.entities.insert(new_pos, Entity::Player);
+        self.robot = new_pos;
+    }
+
+    fn print_map(&self) {
+        let max_x = self.entities.keys().map(|(x, _)| *x).max().unwrap_or(0) + 1;
+        let max_y = self.input.1;
+
+        for y in 0..max_y {
+            for x in 0..max_x {
+                let entity = self.entities.get(&(x, y)).unwrap_or(&Entity::Air);
+                let ch = match entity {
+                    Entity::Air => '.',
+                    Entity::Box => 'O',
+                    Entity::Wall => '#',
+                    Entity::Player => '@',
+                };
+                print!("{}", ch);
+            }
+            println!();
+        }
+    }
+
+    fn sum_gps(&self) -> (usize, usize) {
+        let mut sum = 0;
+        let mut count = 0;
+        for ((x, y), entity) in &self.entities {
+            if *entity == Entity::Box {
+                count += 1;
+                sum += 100 * y + x;
+            }
+        }
+        (sum, count)
+    }
+
+    fn check_towards(&self, direction: &Instruction) -> Vec<Entity> {
         let mut increaser = 1;
         let mut direction_entities: Vec<Entity> = Vec::new();
         match direction {
             Instruction::Up => {
-                while *entities
-                    .get(&(self.x, self.y - increaser))
+                while *self
+                    .entities
+                    .get(&(self.robot.0, self.robot.1 - increaser))
                     .unwrap_or(&Entity::Air)
                     != Entity::Wall
                 {
                     direction_entities.push(
-                        *entities
-                            .get(&(self.x, self.y - increaser))
+                        *self
+                            .entities
+                            .get(&(self.robot.0, self.robot.1 - increaser))
                             .unwrap_or(&Entity::Air),
                     );
                     increaser += 1;
@@ -33,14 +141,16 @@ impl Robot {
                 direction_entities.push(Entity::Wall);
             }
             Instruction::Down => {
-                while *entities
-                    .get(&(self.x, self.y + increaser))
+                while *self
+                    .entities
+                    .get(&(self.robot.0, self.robot.1 + increaser))
                     .unwrap_or(&Entity::Air)
                     != Entity::Wall
                 {
                     direction_entities.push(
-                        *entities
-                            .get(&(self.x, self.y + increaser))
+                        *self
+                            .entities
+                            .get(&(self.robot.0, self.robot.1 + increaser))
                             .unwrap_or(&Entity::Air),
                     );
                     increaser += 1;
@@ -48,14 +158,16 @@ impl Robot {
                 direction_entities.push(Entity::Wall);
             }
             Instruction::Left => {
-                while *entities
-                    .get(&(self.x - increaser, self.y))
+                while *self
+                    .entities
+                    .get(&(self.robot.0 - increaser, self.robot.1))
                     .unwrap_or(&Entity::Air)
                     != Entity::Wall
                 {
                     direction_entities.push(
-                        *entities
-                            .get(&(self.x - increaser, self.y))
+                        *self
+                            .entities
+                            .get(&(self.robot.0 - increaser, self.robot.1))
                             .unwrap_or(&Entity::Air),
                     );
                     increaser += 1;
@@ -63,14 +175,16 @@ impl Robot {
                 direction_entities.push(Entity::Wall);
             }
             Instruction::Right => {
-                while *entities
-                    .get(&(self.x + increaser, self.y))
+                while *self
+                    .entities
+                    .get(&(self.robot.0 + increaser, self.robot.1))
                     .unwrap_or(&Entity::Air)
                     != Entity::Wall
                 {
                     direction_entities.push(
-                        *entities
-                            .get(&(self.x + increaser, self.y))
+                        *self
+                            .entities
+                            .get(&(self.robot.0 + increaser, self.robot.1))
                             .unwrap_or(&Entity::Air),
                     );
                     increaser += 1;
@@ -80,142 +194,98 @@ impl Robot {
         }
         direction_entities
     }
-}
 
-#[derive(Debug, PartialEq, Clone, Copy)]
-enum Entity {
-    Wall,
-    Box,
-    Air,
-}
+    fn slide_boxes(&self, entities: Vec<Entity>) -> Vec<Entity> {
+        let mut new_entities = entities.clone();
 
-#[derive(Debug, PartialEq)]
-enum Instruction {
-    Up,
-    Down,
-    Left,
-    Right,
-}
-
-fn slide_boxes(entities: Vec<Entity>) -> Vec<Entity> {
-    let mut new_entities = entities.clone();
-
-    if let Some(i) = new_entities.par_iter().position_last(|e| *e == Entity::Air) {
-        new_entities.remove(i);
-        new_entities.insert(0, Entity::Air);
+        if let Some(i) = new_entities.iter().position(|e| *e == Entity::Air) {
+            new_entities.remove(i);
+            new_entities.insert(0, Entity::Air);
+        }
+        new_entities
     }
-    new_entities
-}
 
-fn parse_input(input: &str) -> (HashMap<(usize, usize), Entity>, Vec<Instruction>, Robot) {
-    let mut entities = HashMap::new();
-    let mut instructions = Vec::new();
-    let mut robot: Robot = Robot { x: 0, y: 0 };
-    for (y, line) in input.lines().enumerate() {
-        for (x, char) in line.chars().enumerate() {
-            match char {
-                '#' => {
-                    entities.insert((x, y), Entity::Wall);
+    fn run(&mut self) {
+        // println!("0. Initial state: ({}, {})", self.robot.0, self.robot.1);
+        // self.print_map();
+        for instruction in self.moveset.clone() {
+            let mut towards = self.check_towards(&instruction);
+            // println!(
+            //     "Robot({}, {}) -> {}. {:?} {:?}",
+            //     self.robot.0,
+            //     self.robot.1,
+            //     i + 1,
+            //     instruction,
+            //     towards
+            // );
+            match instruction {
+                Instruction::Up => {
+                    if towards[0] == Entity::Box {
+                        let slide = self.slide_boxes(towards.clone());
+                        for (i, slide_item) in slide.iter().enumerate() {
+                            self.entities
+                                .insert((self.robot.0, self.robot.1 - i - 1), *slide_item);
+                        }
+                        towards = self.check_towards(&instruction);
+                    }
+
+                    if towards[0] == Entity::Air {
+                        self.set_pos((0, -1));
+                    }
                 }
-                'O' => {
-                    entities.insert((x, y), Entity::Box);
+                Instruction::Down => {
+                    if towards[0] == Entity::Box {
+                        let slide = self.slide_boxes(towards.clone());
+                        for (i, slide_item) in slide.iter().enumerate() {
+                            self.entities
+                                .insert((self.robot.0, self.robot.1 + i + 1), *slide_item);
+                        }
+                        towards = self.check_towards(&instruction);
+                    }
+
+                    if towards[0] == Entity::Air {
+                        self.set_pos((0, 1));
+                    }
                 }
-                '.' => {
-                    entities.insert((x, y), Entity::Air);
+                Instruction::Left => {
+                    if towards[0] == Entity::Box {
+                        let slide = self.slide_boxes(towards.clone());
+                        for (i, slide_item) in slide.iter().enumerate() {
+                            self.entities
+                                .insert((self.robot.0 - i - 1, self.robot.1), *slide_item);
+                        }
+                        towards = self.check_towards(&instruction);
+                    }
+
+                    if towards[0] == Entity::Air {
+                        self.set_pos((-1, 0));
+                    }
                 }
-                '@' => {
-                    robot.x = x;
-                    robot.y = y;
+                Instruction::Right => {
+                    if towards[0] == Entity::Box {
+                        let slide = self.slide_boxes(towards.clone());
+                        for (i, slide_item) in slide.iter().enumerate() {
+                            self.entities
+                                .insert((self.robot.0 + i + 1, self.robot.1), *slide_item);
+                        }
+                        towards = self.check_towards(&instruction);
+                    }
+
+                    if towards[0] == Entity::Air {
+                        self.set_pos((1, 0));
+                    }
                 }
-                '^' => instructions.push(Instruction::Up),
-                '<' => instructions.push(Instruction::Left),
-                '>' => instructions.push(Instruction::Right),
-                'v' => instructions.push(Instruction::Down),
-                _ => {}
             }
+            // self.print_map();
         }
     }
-
-    (entities, instructions, robot)
-}
-
-fn calculate_movement(input: &str) -> HashMap<(usize, usize), Entity> {
-    let (mut entities, instructions, mut robot) = parse_input(input);
-    for instruction in instructions {
-        let towards = robot.check_towards(entities.clone(), &instruction).clone();
-        println!(
-            "Robot({}, {}) -> {:?} {:?}",
-            robot.x, robot.y, instruction, towards
-        );
-        match instruction {
-            Instruction::Up => {
-                if towards[0] == Entity::Box {
-                    let slide = slide_boxes(towards.clone());
-                    for (i, slide_item) in slide.iter().enumerate() {
-                        entities.insert((robot.x, robot.y - i - 1), *slide_item);
-                    }
-                }
-
-                if towards[0] == Entity::Air {
-                    entities.insert((robot.x, robot.y - 1), Entity::Air);
-                    robot.y -= 1;
-                }
-            }
-            Instruction::Down => {
-                if towards[0] == Entity::Box {
-                    let slide = slide_boxes(towards.clone());
-                    for (i, slide_item) in slide.iter().enumerate() {
-                        entities.insert((robot.x, robot.y + i + 1), *slide_item);
-                    }
-                }
-
-                if towards[0] == Entity::Air {
-                    entities.insert((robot.x, robot.y + 1), Entity::Air);
-                    robot.y += 1;
-                }
-            }
-            Instruction::Left => {
-                if towards[0] == Entity::Box {
-                    let slide = slide_boxes(towards.clone());
-                    for (i, slide_item) in slide.iter().enumerate() {
-                        entities.insert((robot.x - i - 1, robot.y), *slide_item);
-                    }
-                }
-
-                if towards[0] == Entity::Air {
-                    entities.insert((robot.x - 1, robot.y), Entity::Air);
-                    robot.x -= 1;
-                }
-            }
-            Instruction::Right => {
-                if towards[0] == Entity::Box {
-                    let slide = slide_boxes(towards.clone());
-                    for (i, slide_item) in slide.iter().enumerate() {
-                        entities.insert((robot.x + i + 1, robot.y), *slide_item);
-                    }
-                }
-
-                if towards[0] == Entity::Air {
-                    entities.insert((robot.x + 1, robot.y), Entity::Air);
-                    robot.x += 1;
-                }
-            }
-        }
-    }
-    entities
 }
 
 fn main() {
-    const INPUT: &str = include_str!("input2.txt");
-    let entities = calculate_movement(INPUT);
-    let mut sum = 0;
+    const INPUT: &str = include_str!("input.txt");
+    let mut simulation = Simulation::new(INPUT);
+    simulation.run();
 
-    for ((x, y), value) in entities {
-        if value == Entity::Box {
-            // println!("Box({}, {})", x, y);
-            sum += y * 100 + x;
-        }
-    }
-
-    println!("Part 1: {}", sum);
+    let (sum, count) = simulation.sum_gps();
+    println!("Part 1: {} [{}]", sum, count);
 }
