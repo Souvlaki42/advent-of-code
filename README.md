@@ -42,5 +42,5 @@ pip install -r requirements.txt
 
 ## License
 
-[Apache 2.0](LICENSE)
+This project is released into the public domain. See the [UNLICENSE](UNLICENSE) file for more information.
 
