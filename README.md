@@ -37,8 +37,8 @@ pip install -r requirements.txt
 
 - Run: `python3 manager.py run -y <year> -d <day> -p <part>`
 - Generate: `python3 manager.py gen -y <year> -d <day>`
-- Download: `python3 manager.py download -y <year> -d <day>`
-- Submit: `python3 manager.py submit -y <year> -d <day> -p <part> -a <answer>`
+- Download input file: `python3 manager.py download -y <year> -d <day>`
+- Submit solution: `python3 manager.py submit -y <year> -d <day> -p <part> -s <solution>`
 
 ## License
 

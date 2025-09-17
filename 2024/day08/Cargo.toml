@@ -1,10 +1,10 @@
 [package]
-name = "day12"
+name = "day08"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "My solution for Advent of Code 2024/12"
+description = "My solution for Advent of Code 2024/08"
 repository.workspace = true
 readme.workspace = true
 rust-version.workspace = true

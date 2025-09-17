@@ -62,9 +62,9 @@ def submit_cmd(args: Arguments) -> str | None:
     year: str = args.year
     day: str = pad2(args.day)
     part: str = args.part
-    answer: str = args.answer
+    solution: str = args.answer
 
-    aoc_submit: str = f"aoc submit {part} \"{answer}\" --year {year} --day {day}"
+    aoc_submit: str = f"aoc submit {part} \"{solution}\" --year {year} --day {day}"
     run(aoc_submit, shell=True)
 
 
@@ -96,7 +96,7 @@ def init_patser() -> ArgumentParser:
     submit_parser = subparsers.add_parser(
         "submit", parents=[yd_parser, p_parser])
     submit_parser.add_argument(
-        "-a", "--answer", type=str, required=True, help="The answer")
+        "-s", "--solution", type=str, required=True, help="The solution")
     submit_parser.set_defaults(func=submit_cmd)
 
     return parser
