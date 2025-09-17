@@ -1,8 +1,9 @@
 #! /usr/bin/env python3
 
-from argparse import ArgumentParser, Namespace as Arguments
 import shutil
 import sys
+from pathlib import Path
+from argparse import ArgumentParser, Namespace as Arguments
 from pathlib import Path
 from subprocess import run
 from dotenv import load_dotenv
@@ -36,6 +37,8 @@ def gen_cmd(args: Arguments) -> str | None:
     year: str = args.year
     day: str = pad2(args.day)
     name: str = f"day{day}"
+    update = Path(
+        f"./{year}/day{args.day}").exists()
 
     cargo_generate: str = f"cargo generate --path ./template --name {name} --define day={day} --define year={year} --vcs none"
     run(cargo_generate, shell=True)
@@ -43,8 +46,20 @@ def gen_cmd(args: Arguments) -> str | None:
     mkdir: str = f"mkdir -p \"./{year}\""
     run(mkdir, shell=True)
 
+    if update:
+        print(f"Updating {year}/{day}...")
+        mv: str = f"mv ./{year}/day{day}/src ./temp/src"
+        run(mv, shell=True)
+
     mv: str = f"mv {name} \"./{year}/{name}\""
     run(mv, shell=True)
+
+    if update:
+        mv: str = f"mv ./temp/src ./{year}/day{day}/src"
+        run(mv, shell=True)
+
+        rm: str = f"rm -rf ./temp"
+        run(rm, shell=True)
 
 
 def download_cmd(args: Arguments) -> str | None:
