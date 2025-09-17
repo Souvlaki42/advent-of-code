@@ -53,18 +53,13 @@ fn check_pos(old_grid: &[Vec<char>], pos: (usize, usize)) -> bool {
                 .iter()
                 .position(|(x, y, _)| *x == guard.pos.0 && *y == guard.pos.1);
 
-            if visited.is_none() {
-                guard.pos_visited.push((guard.pos.0, guard.pos.1, 1));
-            } else {
-                let visited = visited.unwrap();
+            if let Some(visited) = visited {
                 guard.pos_visited[visited].2 += 1;
-            }
-
-            if visited.is_some() {
-                let visited = visited.unwrap();
                 if guard.pos_visited[visited].2 == 4 {
                     return true;
                 }
+            } else {
+                guard.pos_visited.push((guard.pos.0, guard.pos.1, 1));
             }
         }
     }
