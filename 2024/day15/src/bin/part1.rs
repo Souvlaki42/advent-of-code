@@ -88,6 +88,7 @@ impl<'a> Simulation<'a> {
         self.robot = new_pos;
     }
 
+    #[allow(dead_code)]
     fn print_map(&self) {
         let max_x = self.entities.keys().map(|(x, _)| *x).max().unwrap_or(0) + 1;
         let max_y = self.input.1;
@@ -282,7 +283,7 @@ impl<'a> Simulation<'a> {
 }
 
 fn main() {
-    const INPUT: &str = include_str!("input.txt");
+    const INPUT: &str = include_str!("../inputs/input.txt");
     let mut simulation = Simulation::new(INPUT);
     simulation.run();
 

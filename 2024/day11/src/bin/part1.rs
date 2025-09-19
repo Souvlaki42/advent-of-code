@@ -5,7 +5,7 @@ fn split_string_in_half(s: &str) -> (&str, &str) {
 }
 
 fn main() {
-    const INPUT: &str = include_str!("input.txt");
+    const INPUT: &str = include_str!("../inputs/input.txt");
     const BLINKS: u128 = 25;
     let mut stones = INPUT
         .lines()

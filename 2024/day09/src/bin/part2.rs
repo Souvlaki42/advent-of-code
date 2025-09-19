@@ -28,7 +28,7 @@ fn find_free_space(
 }
 
 fn main() {
-    const INPUT: &str = include_str!("input.txt");
+    const INPUT: &str = include_str!("../inputs/input.txt");
     let mut blocks: Vec<String> = Vec::new();
     let mut id = 0;
     for (i, char) in INPUT.chars().enumerate() {

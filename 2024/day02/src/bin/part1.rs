@@ -15,7 +15,7 @@ fn is_safe(array: &[u8]) -> bool {
 }
 
 fn main() {
-    let contents = include_str!("input.txt");
+    let contents = include_str!("../inputs/input.txt");
     let lines = contents.lines();
     let mut safe_count: u16 = 0;
     for line in lines {

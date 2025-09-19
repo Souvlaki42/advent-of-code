@@ -37,7 +37,7 @@ fn middle(rules: &[(u128, u128)], numbers: &[u128]) -> u128 {
 }
 
 fn main() {
-    const INPUT: &str = include_str!("input.txt");
+    const INPUT: &str = include_str!("../inputs/input.txt");
     let mut sum = 0;
     let mut reached_updates = false;
     let mut rules: Vec<(u128, u128)> = Vec::new();

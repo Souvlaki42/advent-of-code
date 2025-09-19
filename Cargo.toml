@@ -3,14 +3,14 @@ resolver = "3"
 members = ["2024/*"]
 
 [workspace.package]
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Souvlaki42 <souvlaki420@gmail.com>"]
 edition = "2024"
 license = "Unlicense"
 description = "My advent of code solutions"
 repository = "https://github.com/Souvlaki42/advent-of-code"
 readme = "README.md"
-rust-version = "1.89.0"
+rust-version = "1.89"
 
 [workspace.dependencies]
 itertools = "0.14.0"

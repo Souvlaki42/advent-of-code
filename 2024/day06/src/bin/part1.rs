@@ -6,7 +6,7 @@ struct Guard {
 }
 
 fn main() {
-    const INPUT: &str = include_str!("input.txt");
+    const INPUT: &str = include_str!("../inputs/input.txt");
     let grid: Vec<Vec<char>> = INPUT.lines().map(|line| line.chars().collect()).collect();
     let mut count = 1;
     let mut guard = Guard {

@@ -1,7 +1,7 @@
-use std::collections::{hash_map::Entry, HashMap};
+use std::collections::{HashMap, hash_map::Entry};
 
 fn main() {
-    const INPUT: &str = include_str!("input.txt");
+    const INPUT: &str = include_str!("../inputs/input.txt");
     let grid: Vec<Vec<char>> = INPUT.lines().map(|line| line.chars().collect()).collect();
     let mut antennas: HashMap<char, Vec<(usize, usize)>> = HashMap::new();
     let mut antinodes: Vec<(usize, usize)> = Vec::new();

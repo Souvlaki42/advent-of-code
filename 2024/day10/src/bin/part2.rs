@@ -56,7 +56,7 @@ fn find_trailhead_rating(grid: &[Vec<char>], x: usize, y: usize) -> usize {
 }
 
 fn main() {
-    const INPUT: &str = include_str!("input.txt");
+    const INPUT: &str = include_str!("../inputs/input.txt");
     let grid = INPUT
         .lines()
         .map(|line| line.chars().collect::<Vec<char>>())

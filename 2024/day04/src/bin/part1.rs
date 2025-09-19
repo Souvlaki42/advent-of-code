@@ -36,7 +36,7 @@ fn strict_equal(
 }
 
 fn main() {
-    const INPUT: &str = include_str!("input.txt");
+    const INPUT: &str = include_str!("../inputs/input.txt");
     const WORD: [char; 4] = ['X', 'M', 'A', 'S'];
     let grid = create_grid(INPUT);
     let mut count = 0;

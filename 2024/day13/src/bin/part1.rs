@@ -62,7 +62,7 @@ fn parse_input(input: &str) -> Vec<Machine> {
 }
 
 fn main() {
-    const INPUT: &str = include_str!("input.txt");
+    const INPUT: &str = include_str!("../inputs/input.txt");
     let machines = parse_input(INPUT);
     let mut sum = 0;
 

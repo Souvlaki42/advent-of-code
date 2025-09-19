@@ -36,7 +36,7 @@ fn check_diagonals(grid: &[Vec<char>], letter: (usize, usize)) -> bool {
 }
 
 fn main() {
-    const INPUT: &str = include_str!("input.txt");
+    const INPUT: &str = include_str!("../inputs/input.txt");
     let grid = create_grid(INPUT);
     let mut count = 0;
 

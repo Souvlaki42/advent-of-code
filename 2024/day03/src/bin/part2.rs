@@ -1,7 +1,7 @@
 use regex::Regex;
 
 fn main() {
-    let contents = include_str!("input.txt");
+    let contents = include_str!("../inputs/input.txt");
     let code_regex = Regex::new(r"(mul\(\d+,\d+\))|(do\(\))|(don't\(\))");
     if code_regex.is_err() {
         println!("Regex error");

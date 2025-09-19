@@ -66,7 +66,7 @@ fn check_pos(old_grid: &[Vec<char>], pos: (usize, usize)) -> bool {
 }
 
 fn main() {
-    const INPUT: &str = include_str!("input.txt");
+    const INPUT: &str = include_str!("../inputs/input.txt");
     let grid: Vec<Vec<char>> = INPUT.lines().map(|line| line.chars().collect()).collect();
 
     let count: usize = (0..grid.len())

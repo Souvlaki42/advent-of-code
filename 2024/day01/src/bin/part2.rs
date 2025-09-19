@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 fn main() {
-    let contents = include_str!("input.txt");
+    let contents = include_str!("../inputs/input.txt");
     let lines = contents.lines();
     let mut list1 = Vec::<u32>::new();
     let mut list1unique = Vec::<u32>::new();

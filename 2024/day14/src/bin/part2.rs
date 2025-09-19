@@ -59,7 +59,7 @@ fn is_tree(robots: &[Robot]) -> bool {
 }
 
 fn main() {
-    const INPUT: &str = include_str!("input.txt");
+    const INPUT: &str = include_str!("../inputs/input.txt");
     const SIZE: (isize, isize) = (101, 103); // IMPORTANT: This changes with input file
 
     let mut robots = parse_input(INPUT);

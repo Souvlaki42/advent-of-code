@@ -42,7 +42,7 @@ fn evaluate(test_val: &u64, test_items: &[u64]) -> bool {
 }
 
 fn main() {
-    const INPUT: &str = include_str!("input.txt");
+    const INPUT: &str = include_str!("../inputs/input.txt");
     let mut sum = 0;
     for line in INPUT.lines() {
         let parts = line.splitn(2, ':').collect::<Vec<&str>>();

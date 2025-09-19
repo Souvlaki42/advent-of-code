@@ -1,6 +1,6 @@
 # Advent of Code
 
-My advent of code solutions starting from 2024. I'm using rust for now. I might use other languages or try other years' challenges in the future.
+My AoC solutions starting from 2024. I'm using Rust for it but I use Python for my CLI automations.
 
 > [!NOTE]
 > This is my personal repo for my solutions to the advent of code challenges.
@@ -15,30 +15,33 @@ My advent of code solutions starting from 2024. I'm using rust for now. I might 
 
 ## Dependencies
 
-- Install [Rust 1.89+](https://www.rust-lang.org/tools/install)
-- Install [Python 3.10+](https://www.python.org/downloads/)
+- Install [Rust 1.89+](https://www.rust-lang.org/tools/install/)
+- Install [UV](https://docs.astral.sh/uv/getting-started/installation/)
 - Install [AoC CLI](https://github.com/scarvalhojr/aoc-cli/)
-- (Optional) Install [Cargo Generate](https://github.com/cargo-generate/cargo-generate)
+- Install [Cargo Generate](https://github.com/cargo-generate/cargo-generate/)
 
 ## Usage
 
-First, make a `.env` file in the root of the project with the following content:
+First, make sure to store your AoC session cookie inside `~/.adventofcode.session` file, as per the [AoC CLI](https://github.com/scarvalhojr/aoc-cli/?tab=readme-ov-file#session-cookie-) instructions.
 
-```dotenv
-# Your AoC session (https://github.com/scarvalhojr/aoc-cli/?tab=readme-ov-file#session-cookie-)
-ADVENT_OF_CODE_SESSION=<your-seesion-cookie>
-```
-
-Then, install python dependencies:
+Then, setup your Python virtual environment and install the dependencies:
 
 ```bash
-pip install -r requirements.txt
+uv venv
+source venv/bin/activate
+venv sync
 ```
 
-- Run: `python3 manager.py run -y <year> -d <day> -p <part>`
-- Generate: `python3 manager.py gen -y <year> -d <day>`
-- Download input file: `python3 manager.py download -y <year> -d <day>`
-- Submit solution: `python3 manager.py submit -y <year> -d <day> -p <part> -s <solution>`
+To leave the virtual environment, run `deactivate`.
+
+While inside the virtual environment, you can run the following commands:
+
+- Run: `aoc-manager run -y <year> -d <day> -p <part>`
+- Generate: `aoc-manager gen -y <year> -d <day>`
+- Download input file: `aoc-manager download -y <year> -d <day>`
+- Submit solution: `aoc-manager submit -y <year> -d <day> -p <part> -s <solution>`
+
+The `day` argument can be a single number or a range of numbers, e.g. `1..15` or `1,3,7..10`.
 
 ## License
 
