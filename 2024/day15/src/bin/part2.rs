@@ -67,8 +67,6 @@ impl EntityMap {
     }
 }
 
-type BoxTree = Vec<Vec<(usize, usize)>>;
-
 impl Simulation {
     fn new(file_path: &str) -> Self {
         let mut entities = EntityMap::new();
@@ -142,54 +140,6 @@ impl Simulation {
         }
     }
 
-    fn get_box_tree(&mut self) -> BoxTree {
-        let mut increaser = 1;
-        let mut box_tree: BoxTree = Vec::new();
-        while self.robot.1 - increaser > 0 {
-            if box_tree.len() < increaser {
-                box_tree.push(Vec::new());
-            }
-
-            let row = self.entities.row(self.robot.1 - increaser).unwrap();
-
-            let box_row = row
-                .iter()
-                .enumerate()
-                .filter(|(k, e)| {
-                    if **e != Entity::BoxLeft && **e != Entity::BoxRight {
-                        return false;
-                    }
-
-                    if **e == Entity::BoxLeft
-                        && *k != self.robot.0
-                        && !box_tree[increaser - 1].contains(&(*k + 1, self.robot.1 + increaser))
-                        && (increaser >= 2
-                            && !box_tree[increaser - 2].contains(&(*k, self.robot.1 + increaser)))
-                    {
-                        return false;
-                    }
-
-                    if **e == Entity::BoxRight
-                        && *k != self.robot.0
-                        && !box_tree[increaser - 1].contains(&(*k - 1, self.robot.1 + increaser))
-                        && (increaser >= 2
-                            && !box_tree[increaser - 2].contains(&(*k, self.robot.1 + increaser)))
-                    {
-                        return false;
-                    }
-
-                    true
-                })
-                .map(|(k, _)| (k, self.robot.1 + increaser))
-                .collect_vec();
-
-            box_tree.push(box_row);
-            increaser += 1;
-        }
-
-        box_tree
-    }
-
     fn move_on_clear(&mut self, direction: Direction) {
         let new_pos = match direction {
             Direction::Up => (self.robot.0, self.robot.1 - 1),
@@ -211,31 +161,59 @@ impl Simulation {
 
     fn move_boxes(&mut self, direction: Direction) {
         match direction {
-            Direction::Up => {
-                println!("{:?}", self.get_box_tree());
+            Direction::Up => {}
+            Direction::Down => {
+                if self.entities.get((self.robot.0, self.robot.1 + 1)) == Some(Entity::BoxLeft) {
+                    let mut column_pairs = Vec::new();
+                    for y in self.robot.1 + 1..self.grid_size.1 {
+                        let row = self.entities.row(y).unwrap();
+                        let airs = row.iter().positions(|e| *e == Entity::Air);
+                        let airs_front = airs
+                            .tuple_windows()
+                            .find(|(p, p2)| *p == self.robot.0 && *p2 == *p + 1);
+                        if let Some((x1, x2)) = airs_front {
+                            column_pairs.push((x1, x2));
+                        }
+                    }
+                    let air_squares = column_pairs
+                        .iter()
+                        .tuple_windows()
+                        .find(|(p, p2)| p2.0 == p.0 + 1 && p2.1 == p.0 + 1);
+                }
             }
-            Direction::Down => {}
             Direction::Left => {
-                let new_pos = (self.robot.0 - 1, self.robot.1);
-                if self.entities.get(new_pos) == Some(Entity::BoxRight) {
+                if self.entities.get((self.robot.0 - 1, self.robot.1)) == Some(Entity::BoxRight) {
                     let row = self.entities.row(self.robot.1).unwrap();
+
                     let airs = row.iter().positions(|e| *e == Entity::Air);
-                    if let Some(airs_front) = airs.filter(|p| *p < self.robot.0).next_back() {
-                        row.remove(airs_front);
-                        self.robot = new_pos;
-                        row.insert(new_pos.0 + 1, Entity::Air);
+                    let airs_front = airs
+                        .tuple_windows()
+                        .find(|(p, p2)| *p < self.robot.0 && *p2 == *p - 1);
+
+                    if let Some((x1, _)) = airs_front {
+                        row.remove(x1);
+                        row.insert(self.robot.0, Entity::Air);
+                        row.remove(x1 - 1);
+                        row.insert(self.robot.0, Entity::Air);
+                        self.robot = (self.robot.0 - 2, self.robot.1);
                     }
                 }
             }
             Direction::Right => {
-                let new_pos = (self.robot.0 + 1, self.robot.1);
-                if self.entities.get(new_pos) == Some(Entity::BoxLeft) {
+                if self.entities.get((self.robot.0 + 1, self.robot.1)) == Some(Entity::BoxLeft) {
                     let row = self.entities.row(self.robot.1).unwrap();
-                    let mut airs = row.iter().positions(|e| *e == Entity::Air);
-                    if let Some(airs_front) = airs.find(|p| *p > self.robot.0) {
-                        row.remove(airs_front);
-                        self.robot = new_pos;
-                        row.insert(new_pos.0 + 1, Entity::Air);
+
+                    let airs = row.iter().positions(|e| *e == Entity::Air);
+                    let airs_front = airs
+                        .tuple_windows()
+                        .find(|(p, p2)| *p > self.robot.0 && *p2 == *p + 1);
+
+                    if let Some((x1, _)) = airs_front {
+                        row.remove(x1);
+                        row.insert(self.robot.0, Entity::Air);
+                        row.remove(x1 + 1);
+                        row.insert(self.robot.0, Entity::Air);
+                        self.robot = (self.robot.0 + 2, self.robot.1);
                     }
                 }
             }
