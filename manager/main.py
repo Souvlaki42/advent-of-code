@@ -130,7 +130,7 @@ def submit(year: int, days: list[str], part: int, solution: str):
 
     for day in days:
         sp.run(
-            f"aoc submit {part} "/{solution}/" --year {year} --day {day}", shell=True, check=True)
+            f"aoc submit {part} '{solution}' --year {year} --day {day}", shell=True, check=True)
 
 
 if __name__ == "__main__":

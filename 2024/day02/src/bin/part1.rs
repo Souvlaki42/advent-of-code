@@ -5,10 +5,12 @@ fn is_safe(array: &[u8]) -> bool {
         if !(1..=3).contains(&diff) {
             return false;
         }
-        if increasing.is_none() {
+        if let Some(increasing) = increasing {
+            if (array[i] > array[i - 1]) != increasing {
+                return false;
+            }
+        } else {
             increasing = Some(array[i] > array[i - 1]);
-        } else if (array[i] > array[i - 1]) != increasing.unwrap() {
-            return false;
         }
     }
     true
