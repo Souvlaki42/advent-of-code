@@ -1,4 +1,8 @@
 use itertools::Itertools;
+use std::{
+    cmp::Reverse,
+    collections::{HashSet, VecDeque},
+};
 
 #[derive(Debug)]
 struct Simulation {
@@ -28,6 +32,12 @@ enum Direction {
 #[derive(Debug)]
 struct EntityMap {
     inner: Vec<Vec<Entity>>,
+}
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, PartialOrd, Ord)]
+struct BoxTreeLeaf {
+    left: usize,
+    y: usize,
 }
 
 impl EntityMap {
@@ -63,6 +73,26 @@ impl EntityMap {
         if self.inner.len() > index {
             return Some(self.inner.get_mut(index).unwrap());
         }
+        None
+    }
+
+    fn resolve_to_leaf(&self, key: (usize, usize)) -> Option<BoxTreeLeaf> {
+        let entity = self.get(key)?;
+
+        if entity == Entity::BoxLeft {
+            return Some(BoxTreeLeaf {
+                left: key.0,
+                y: key.1,
+            });
+        };
+
+        if entity == Entity::BoxRight {
+            return Some(BoxTreeLeaf {
+                left: key.0 - 1,
+                y: key.1,
+            });
+        }
+
         None
     }
 }
@@ -140,47 +170,129 @@ impl Simulation {
         }
     }
 
-    fn move_on_clear(&mut self, direction: Direction) {
-        let new_pos = match direction {
-            Direction::Up => (self.robot.0, self.robot.1 - 1),
-            Direction::Down => (self.robot.0, self.robot.1 + 1),
-            Direction::Left => (self.robot.0 - 1, self.robot.1),
-            Direction::Right => (self.robot.0 + 1, self.robot.1),
-        };
-
-        if let Some(entity) = self.entities.get(new_pos) {
-            if entity == Entity::Air {
-                self.entities.set(self.robot, Entity::Air);
-                self.entities.set(new_pos, Entity::Player);
-                self.robot = new_pos;
+    fn incement_robot_coords_by_direction(
+        &mut self,
+        direction: Direction,
+    ) -> Result<(usize, usize), String> {
+        match direction {
+            Direction::Up => {
+                if self.robot.1 == 0 {
+                    return Err("New position is out of bounds".to_string());
+                }
+                let new_pos = (self.robot.0, self.robot.1 - 1);
+                Ok(new_pos)
             }
-        } else {
-            println!("Invalid position: {:?}", new_pos);
+            Direction::Down => {
+                let new_pos = (self.robot.0, self.robot.1 + 1);
+                if new_pos.1 >= self.grid_size.1 {
+                    return Err("New position is out of bounds".to_string());
+                }
+                Ok(new_pos)
+            }
+            Direction::Left => {
+                if self.robot.0 == 0 {
+                    return Err("New position is out of bounds".to_string());
+                }
+                let new_pos = (self.robot.0 - 1, self.robot.1);
+                Ok(new_pos)
+            }
+            Direction::Right => {
+                let new_pos = (self.robot.0 + 1, self.robot.1);
+                if new_pos.0 >= self.grid_size.0 {
+                    return Err("New position is out of bounds".to_string());
+                }
+                Ok(new_pos)
+            }
         }
     }
 
-    fn move_boxes(&mut self, direction: Direction) {
-        match direction {
-            Direction::Up => {}
-            Direction::Down => {
-                if self.entities.get((self.robot.0, self.robot.1 + 1)) == Some(Entity::BoxLeft) {
-                    let mut column_pairs = Vec::new();
-                    for y in self.robot.1 + 1..self.grid_size.1 {
-                        let row = self.entities.row(y).unwrap();
-                        let airs = row.iter().positions(|e| *e == Entity::Air);
-                        let airs_front = airs
-                            .tuple_windows()
-                            .find(|(p, p2)| *p == self.robot.0 && *p2 == *p + 1);
-                        if let Some((x1, x2)) = airs_front {
-                            column_pairs.push((x1, x2));
-                        }
-                    }
-                    let air_squares = column_pairs
-                        .iter()
-                        .tuple_windows()
-                        .find(|(p, p2)| p2.0 == p.0 + 1 && p2.1 == p.0 + 1);
+    fn move_on_clear(&mut self, direction: Direction) {
+        println!(
+            "move_on_clear start: robot={:?}, dir={:?}",
+            self.robot, direction
+        );
+        if let Ok(new_pos) = self.incement_robot_coords_by_direction(direction)
+            && let Some(Entity::Air) = self.entities.get(new_pos)
+        {
+            self.entities.set(self.robot, Entity::Air);
+            self.entities.set(new_pos, Entity::Player);
+            self.robot = new_pos;
+        }
+        println!("move_on_clear end: robot={:?}", self.robot);
+    }
+
+    fn get_box_tree(&mut self, direction: Direction) -> Result<Vec<BoxTreeLeaf>, String> {
+        let mut box_tree: Vec<BoxTreeLeaf> = Vec::new();
+        let mut to_visit: VecDeque<BoxTreeLeaf> = VecDeque::new();
+        let mut visited: HashSet<BoxTreeLeaf> = HashSet::new();
+
+        let start_box_pos = self.incement_robot_coords_by_direction(direction)?;
+
+        let start_box_maybe = self.entities.resolve_to_leaf(start_box_pos);
+
+        if start_box_maybe.is_none() {
+            return Ok(Vec::new());
+        }
+
+        let start = start_box_maybe.unwrap();
+        to_visit.push_back(start);
+
+        while let Some(current) = to_visit.pop_front() {
+            if visited.contains(&current) {
+                continue;
+            }
+            visited.insert(current);
+
+            let BoxTreeLeaf { left: lx, y } = current;
+            let dest_y = match direction {
+                Direction::Up => y - 1,
+                Direction::Down => y + 1,
+                _ => unreachable!(),
+            };
+
+            let dest_leafs = [(lx, dest_y), (lx + 1, dest_y)];
+
+            let mut deps = Vec::new();
+            for (x, y) in dest_leafs {
+                let entity = self
+                    .entities
+                    .get((x, y))
+                    .ok_or("Box entity not found. Aborting".to_string())?;
+                if entity == Entity::Air {
+                    continue;
+                } else if entity == Entity::Wall {
+                    return Err("Wall detected. Aborting".to_string());
+                } else if entity == Entity::BoxLeft || entity == Entity::BoxRight {
+                    deps.push(self.entities.resolve_to_leaf((x, y)).unwrap());
                 }
             }
+
+            box_tree.push(current);
+
+            for dep in deps {
+                to_visit.push_back(dep);
+            }
+        }
+
+        match direction {
+            Direction::Up => {
+                box_tree.sort_by_key(|b| b.y);
+            }
+            Direction::Down => {
+                box_tree.sort_by_key(|b| Reverse(b.y));
+            }
+            _ => unreachable!(),
+        }
+
+        Ok(box_tree)
+    }
+
+    fn try_move_boxes(&mut self, direction: Direction) {
+        println!(
+            "move_boxes start: robot={:?}, dir={:?}",
+            self.robot, direction
+        );
+        match direction {
             Direction::Left => {
                 if self.entities.get((self.robot.0 - 1, self.robot.1)) == Some(Entity::BoxRight) {
                     let row = self.entities.row(self.robot.1).unwrap();
@@ -217,7 +329,71 @@ impl Simulation {
                     }
                 }
             }
+            direction => {
+                let dest = match self.incement_robot_coords_by_direction(direction) {
+                    Ok(pos) => pos,
+                    Err(_) => return, // out of bounds -> no move
+                };
+
+                match self.entities.get(dest) {
+                    Some(Entity::Wall) | None => {
+                        // blocked by wall or OOB
+                        return;
+                    }
+                    Some(Entity::Air) => {
+                        // just move the robot, no boxes
+                        self.entities.set(self.robot, Entity::Air);
+                        self.entities.set(dest, Entity::Player);
+                        self.robot = dest;
+                        return;
+                    }
+                    _ => {} // Box case handled below
+                }
+
+                // --- existing box-moving code follows ---
+                match self.get_box_tree(direction) {
+                    Ok(box_tree) => {
+                        for box_leaf in box_tree {
+                            let BoxTreeLeaf { left: x, y } = box_leaf;
+
+                            // clear old
+                            self.entities.set((x, y), Entity::Air);
+                            self.entities.set((x + 1, y), Entity::Air);
+
+                            // write new
+                            match direction {
+                                Direction::Up => {
+                                    self.entities.set((x, y - 1), Entity::BoxLeft);
+                                    self.entities.set((x + 1, y - 1), Entity::BoxRight);
+                                }
+                                Direction::Down => {
+                                    self.entities.set((x, y + 1), Entity::BoxLeft);
+                                    self.entities.set((x + 1, y + 1), Entity::BoxRight);
+                                }
+                                _ => unreachable!(),
+                            }
+                        }
+
+                        let new_robot = match direction {
+                            Direction::Up => (self.robot.0, self.robot.1 - 1),
+                            Direction::Down => (self.robot.0, self.robot.1 + 1),
+                            _ => unreachable!(),
+                        };
+
+                        // clear old position
+                        self.entities.set(self.robot, Entity::Air);
+
+                        // set new position
+                        self.entities.set(new_robot, Entity::Player);
+                        self.robot = new_robot;
+                    }
+                    Err(_) => {
+                        // blocked by wall in box_tree -> do nothing
+                    }
+                }
+            }
         }
+        println!("move_boxes end: robot={:?}", self.robot);
     }
 
     fn run(&mut self) {
@@ -225,7 +401,7 @@ impl Simulation {
         self.print_map();
         for direction in self.moveset.clone() {
             println!("{:?}", direction);
-            self.move_boxes(direction);
+            self.try_move_boxes(direction);
             self.move_on_clear(direction);
             self.print_map();
         }
