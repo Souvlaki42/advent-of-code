@@ -152,6 +152,20 @@ impl Simulation {
         }
     }
 
+    fn sum_gps(&self) -> (usize, usize) {
+        let mut sum = 0;
+        let mut count = 0;
+        for (y, vec) in self.entities.inner.iter().enumerate() {
+            for (x, entity) in vec.iter().enumerate() {
+                if *entity == Entity::BoxLeft {
+                    count += 1;
+                    sum += 100 * y + x;
+                }
+            }
+        }
+        (sum, count)
+    }
+
     fn print_map(&self) {
         let (max_x, max_y) = self.grid_size;
         for y in 0..max_y {
@@ -207,10 +221,10 @@ impl Simulation {
     }
 
     fn move_on_clear(&mut self, direction: Direction) {
-        println!(
-            "move_on_clear start: robot={:?}, dir={:?}",
-            self.robot, direction
-        );
+        // println!(
+        //     "move_on_clear start: robot={:?}, dir={:?}",
+        //     self.robot, direction
+        // );
         if let Ok(new_pos) = self.incement_robot_coords_by_direction(direction)
             && let Some(Entity::Air) = self.entities.get(new_pos)
         {
@@ -218,7 +232,7 @@ impl Simulation {
             self.entities.set(new_pos, Entity::Player);
             self.robot = new_pos;
         }
-        println!("move_on_clear end: robot={:?}", self.robot);
+        // println!("move_on_clear end: robot={:?}", self.robot);
     }
 
     fn get_box_tree(&mut self, direction: Direction) -> Result<Vec<BoxTreeLeaf>, String> {
@@ -287,32 +301,64 @@ impl Simulation {
         Ok(box_tree)
     }
 
-    fn try_move_boxes(&mut self, direction: Direction) {
-        println!(
-            "move_boxes start: robot={:?}, dir={:?}",
-            self.robot, direction
-        );
+    fn try_move_boxes(&mut self, direction: Direction) -> bool {
+        // println!(
+        //     "move_boxes start: robot={:?}, dir={:?}",
+        //     self.robot, direction
+        // );
         match direction {
             Direction::Left => {
-                if self.entities.get((self.robot.0 - 1, self.robot.1)) == Some(Entity::BoxRight) {
+                // check what's in front
+                let in_front = self
+                    .entities
+                    .get((self.robot.0.saturating_sub(1), self.robot.1));
+                // println!("Left branch: in_front entity = {:?}", in_front);
+                if in_front == Some(Entity::BoxRight) {
+                    // operate on the row
                     let row = self.entities.row(self.robot.1).unwrap();
 
                     let airs = row.iter().positions(|e| *e == Entity::Air);
                     let airs_front = airs
+                        .rev()
                         .tuple_windows()
                         .find(|(p, p2)| *p < self.robot.0 && *p2 == *p - 1);
 
-                    if let Some((x1, _)) = airs_front {
-                        row.remove(x1);
+                    if let Some((p, _)) = airs_front {
+                        // p is the larger index of the adjacent-air pair (p-1, p)
+                        let idx_high = p;
+                        let idx_low = p - 1;
+
+                        // remove higher index first
+                        let _ = row.remove(idx_high);
+                        let _ = row.remove(idx_low);
+
+                        // insert Air at robot position twice (insert at same index, first inserted item will be shifted right by next insert)
                         row.insert(self.robot.0, Entity::Air);
-                        row.remove(x1 - 1);
                         row.insert(self.robot.0, Entity::Air);
+
+                        // update robot pos (moves left by 2)
                         self.robot = (self.robot.0 - 2, self.robot.1);
+
+                        // mark handled
+                        // println!(
+                        //     "Left push: removed ({},{}) and inserted Air at {}, new robot={:?}",
+                        //     idx_low, idx_high, self.robot.0, self.robot
+                        // );
+                        true
+                    } else {
+                        // no air found; we examined and failed to push; return true to avoid calling move_on_clear
+                        // println!("Left push: no air spot found for pushing left");
+                        true
                     }
+                } else {
+                    // not a box in front — did not handle, caller should try move_on_clear
+                    false
                 }
             }
             Direction::Right => {
-                if self.entities.get((self.robot.0 + 1, self.robot.1)) == Some(Entity::BoxLeft) {
+                let in_front = self.entities.get((self.robot.0 + 1, self.robot.1));
+                // println!("Right branch: in_front entity = {:?}", in_front);
+                if in_front == Some(Entity::BoxLeft) {
                     let row = self.entities.row(self.robot.1).unwrap();
 
                     let airs = row.iter().positions(|e| *e == Entity::Air);
@@ -320,32 +366,53 @@ impl Simulation {
                         .tuple_windows()
                         .find(|(p, p2)| *p > self.robot.0 && *p2 == *p + 1);
 
-                    if let Some((x1, _)) = airs_front {
-                        row.remove(x1);
+                    if let Some((p, _)) = airs_front {
+                        // here p is the smaller index of the adjacent-air pair (p, p+1)
+                        let idx_low = p;
+                        let idx_high = p + 1;
+
+                        // remove higher index first
+                        let _ = row.remove(idx_high);
+                        let _ = row.remove(idx_low);
+
+                        // insert Air at robot position twice (the first insert becomes the left of the two)
                         row.insert(self.robot.0, Entity::Air);
-                        row.remove(x1 + 1);
                         row.insert(self.robot.0, Entity::Air);
+
+                        // update robot pos (moves right by 2)
                         self.robot = (self.robot.0 + 2, self.robot.1);
+
+                        // println!(
+                        //     "Right push: removed ({},{}) and inserted Air at {}, new robot={:?}",
+                        //     idx_low, idx_high, self.robot.0, self.robot
+                        // );
+                        true
+                    } else {
+                        // println!("Right push: no air spot found for pushing right");
+                        true // attempted push, but no space
                     }
+                } else {
+                    // not a box in front — let caller try to walk
+                    false
                 }
             }
             direction => {
                 let dest = match self.incement_robot_coords_by_direction(direction) {
                     Ok(pos) => pos,
-                    Err(_) => return, // out of bounds -> no move
+                    Err(_) => return false, // out of bounds -> no move
                 };
 
                 match self.entities.get(dest) {
                     Some(Entity::Wall) | None => {
                         // blocked by wall or OOB
-                        return;
+                        return true;
                     }
                     Some(Entity::Air) => {
                         // just move the robot, no boxes
                         self.entities.set(self.robot, Entity::Air);
                         self.entities.set(dest, Entity::Player);
                         self.robot = dest;
-                        return;
+                        return true;
                     }
                     _ => {} // Box case handled below
                 }
@@ -386,14 +453,15 @@ impl Simulation {
                         // set new position
                         self.entities.set(new_robot, Entity::Player);
                         self.robot = new_robot;
+
+                        true
                     }
                     Err(_) => {
-                        // blocked by wall in box_tree -> do nothing
+                        true // blocked by wall in box_tree -> do nothing
                     }
                 }
             }
         }
-        println!("move_boxes end: robot={:?}", self.robot);
     }
 
     fn run(&mut self) {
@@ -401,8 +469,9 @@ impl Simulation {
         self.print_map();
         for direction in self.moveset.clone() {
             println!("{:?}", direction);
-            self.try_move_boxes(direction);
-            self.move_on_clear(direction);
+            if !self.try_move_boxes(direction) {
+                self.move_on_clear(direction);
+            };
             self.print_map();
         }
     }
@@ -413,6 +482,6 @@ fn main() {
     let mut simulation = Simulation::new(INPUT);
     simulation.run();
 
-    // let (sum, count) = simulation.sum_gps();
-    // println!("Part 1: {} [{}]", sum, count);
+    let (sum, count) = simulation.sum_gps();
+    println!("Part 2: {} [{}]", sum, count);
 }

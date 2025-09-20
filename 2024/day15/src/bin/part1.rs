@@ -207,18 +207,8 @@ impl<'a> Simulation<'a> {
     }
 
     fn run(&mut self) {
-        // println!("0. Initial state: ({}, {})", self.robot.0, self.robot.1);
-        // self.print_map();
         for instruction in self.moveset.clone() {
             let mut towards = self.check_towards(&instruction);
-            // println!(
-            //     "Robot({}, {}) -> {}. {:?} {:?}",
-            //     self.robot.0,
-            //     self.robot.1,
-            //     i + 1,
-            //     instruction,
-            //     towards
-            // );
             match instruction {
                 Instruction::Up => {
                     if towards[0] == Entity::Box {
@@ -277,7 +267,6 @@ impl<'a> Simulation<'a> {
                     }
                 }
             }
-            // self.print_map();
         }
     }
 }
