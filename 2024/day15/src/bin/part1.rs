@@ -88,7 +88,6 @@ impl<'a> Simulation<'a> {
         self.robot = new_pos;
     }
 
-    #[allow(dead_code)]
     fn print_map(&self) {
         let max_x = self.entities.keys().map(|(x, _)| *x).max().unwrap_or(0) + 1;
         let max_y = self.input.1;
@@ -207,7 +206,10 @@ impl<'a> Simulation<'a> {
     }
 
     fn run(&mut self) {
+        println!("Initial state:");
+        self.print_map();
         for instruction in self.moveset.clone() {
+            println!("{:?}", instruction);
             let mut towards = self.check_towards(&instruction);
             match instruction {
                 Instruction::Up => {
@@ -267,6 +269,7 @@ impl<'a> Simulation<'a> {
                     }
                 }
             }
+            self.print_map();
         }
     }
 }
