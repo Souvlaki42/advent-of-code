@@ -10,7 +10,6 @@ edition = "2024"
 rust-version = "1.91"
 
 [dependencies]
-clap = { version = "4.5.53", features = ["derive"] }
 inventory = "0.3.21"
 itertools = "0.14.0"
 rayon = "1.11.0"
