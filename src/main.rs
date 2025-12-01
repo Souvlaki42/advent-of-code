@@ -10,6 +10,7 @@ pub struct Solution {
 inventory::collect!(Solution);
 
 mod year2024;
+mod year2025;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
