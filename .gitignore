@@ -19,11 +19,5 @@ input*.txt
 # Ignore env files (.env)
 .env*
 
-# Ignore Python cache and venv
-__pycache__/
-*.pyc
-*venv/
-*.egg-info/
-
 # Ignore .DS_Store
 .DS_Store
