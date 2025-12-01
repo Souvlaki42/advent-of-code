@@ -15,6 +15,7 @@ Cargo.lock
 
 # Ignore input files
 input*.txt
+example*.txt
 
 # Ignore env files (.env)
 .env*

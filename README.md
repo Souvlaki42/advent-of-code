@@ -8,7 +8,7 @@ My AoC solutions starting from 2024/2025. I'm using Rust for it.
 > I'm not trying to compete with anyone, I just want to learn and have fun solving some challenges.
 
 > [!IMPORTANT]
-> This is not neccessarily the most optimal solution. I might do some optimizations later on.
+> This is not necessarily the most optimal solution. I might do some optimizations later on.
 
 > [!WARNING]
 > I'm not responsible for any consequences of using this repo. Use it at your own risk.
@@ -20,6 +20,10 @@ Install [Rust 1.91+](https://www.rust-lang.org/tools/install/)
 ## Usage
 
 Just run `cargo run -- <year> <day> <part>`
+
+To add a day, copy a day's folder, rename it, modify the `mod.rs` file, and change to the `inventory` macro to register the day.
+
+To add a year, copy a year's folder, rename it, and modify the `mod.rs` file and the `main.rs` file to include the year.
 
 ## License
 
