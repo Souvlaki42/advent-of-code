@@ -13,6 +13,12 @@ My AoC solutions starting from 2024/2025. I'm using Rust for it.
 > [!WARNING]
 > I'm not responsible for any consequences of using this repo. Use it at your own risk.
 
+## Not done yet
+
+- Every change from 2015 to 2023.
+- 2024 day 16 to 25.
+- 2025 day 3 part 2.
+
 ## Dependencies
 
 Install [Rust 1.91+](https://www.rust-lang.org/tools/install/)
