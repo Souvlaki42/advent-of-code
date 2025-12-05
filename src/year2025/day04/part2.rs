@@ -1,5 +1,5 @@
 inventory::submit! {
-    crate::Solution { year: 2025, day: 3, part: 2, run: run }
+    crate::Solution { year: 2025, day: 4, part: 2, run: run }
 }
 
 fn run() {
