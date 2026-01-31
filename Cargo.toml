@@ -1,13 +1,13 @@
 [package]
 name = "advent-of-code"
-version = "0.4.0"
+version = "0.4.5"
 authors = ["Souvlaki42 <ilias@moulas.dev>"]
 description = "My advent of code solutions"
 readme = "README.md"
 license = "Unlicense"
 repository = "https://github.com/Souvlaki42/advent-of-code"
 edition = "2024"
-rust-version = "1.91"
+rust-version = "1.92"
 
 [dependencies]
 inventory = "0.3.21"
