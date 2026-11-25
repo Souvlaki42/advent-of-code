@@ -29,7 +29,8 @@ fn main() {
         .find(|s| s.year == year && s.day == day && s.part == part)
     {
         println!("🎄 Running Year {} Day {} Part {}...", year, day, part);
-        let Ok(input_file) = fs::read_to_string(format!("year{year}/day{day:02}/input.txt")) else {
+        let Ok(input_file) = fs::read_to_string(format!("src/year{year}/day{day:02}/input.txt"))
+        else {
             eprintln!("Missing input file for {year}'s day {day:02} part {part}");
             return;
         };
