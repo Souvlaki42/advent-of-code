@@ -2,8 +2,7 @@ inventory::submit! {
     crate::Solution { year: 2024, day: 1, part: 1, run: run }
 }
 
-fn run() {
-    let contents = include_str!("input.txt");
+fn run(contents: String) {
     let lines = contents.lines();
     let mut list1 = Vec::<u32>::new();
     let mut list2 = Vec::<u32>::new();

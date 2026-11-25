@@ -65,9 +65,8 @@ inventory::submit! {
     crate::Solution { year: 2024, day: 13, part: 1, run: run }
 }
 
-fn run() {
-    const INPUT: &str = include_str!("input.txt");
-    let machines = parse_input(INPUT);
+fn run(contents: String) {
+    let machines = parse_input(&contents);
     let mut sum = 0;
 
     for machine in machines {

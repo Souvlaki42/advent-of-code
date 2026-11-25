@@ -26,12 +26,11 @@ inventory::submit! {
     crate::Solution { year: 2024, day: 5, part: 1, run: run }
 }
 
-fn run() {
-    const INPUT: &str = include_str!("input.txt");
+fn run(contents: String) {
     let mut sum = 0;
     let mut reached_updates = false;
     let mut rules: Vec<(u128, u128)> = Vec::new();
-    for line in INPUT.lines() {
+    for line in contents.lines() {
         if line.is_empty() {
             reached_updates = true;
             continue;

@@ -45,10 +45,9 @@ inventory::submit! {
     crate::Solution { year: 2024, day: 7, part: 2, run: run }
 }
 
-fn run() {
-    const INPUT: &str = include_str!("input.txt");
+fn run(contents: String) {
     let mut sum = 0;
-    for line in INPUT.lines() {
+    for line in contents.lines() {
         let parts = line.splitn(2, ':').collect::<Vec<&str>>();
         let test_val = parts[0].parse::<u64>().unwrap();
         let test = parts[1].split(' ').collect::<Vec<&str>>();

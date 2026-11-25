@@ -8,10 +8,9 @@ inventory::submit! {
     crate::Solution { year: 2024, day: 11, part: 1, run: run }
 }
 
-fn run() {
-    const INPUT: &str = include_str!("input.txt");
+fn run(contents: String) {
     const BLINKS: u128 = 25;
-    let mut stones = INPUT
+    let mut stones = contents
         .lines()
         .next()
         .unwrap()

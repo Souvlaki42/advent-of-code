@@ -59,9 +59,8 @@ inventory::submit! {
     crate::Solution { year: 2024, day: 10, part: 2, run: run }
 }
 
-fn run() {
-    const INPUT: &str = include_str!("input.txt");
-    let grid = INPUT
+fn run(contents: String) {
+    let grid = contents
         .lines()
         .map(|line| line.chars().collect::<Vec<char>>())
         .collect::<Vec<Vec<char>>>();

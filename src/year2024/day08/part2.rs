@@ -44,9 +44,11 @@ inventory::submit! {
     crate::Solution { year: 2024, day: 8, part: 2, run: run }
 }
 
-fn run() {
-    const INPUT: &str = include_str!("input.txt");
-    let grid: Vec<Vec<char>> = INPUT.lines().map(|line| line.chars().collect()).collect();
+fn run(contents: String) {
+    let grid: Vec<Vec<char>> = contents
+        .lines()
+        .map(|line| line.chars().collect())
+        .collect();
     let mut antennas: HashMap<char, Vec<(usize, usize)>> = HashMap::new();
     let mut antinodes: Vec<(usize, usize)> = Vec::new();
 

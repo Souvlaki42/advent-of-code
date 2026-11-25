@@ -4,8 +4,7 @@ inventory::submit! {
     crate::Solution { year: 2024, day: 3, part: 2, run: run }
 }
 
-fn run() {
-    let contents = include_str!("input.txt");
+fn run(contents: String) {
     let code_regex = Regex::new(r"(mul\(\d+,\d+\))|(do\(\))|(don't\(\))");
     if code_regex.is_err() {
         println!("Regex error");
@@ -14,7 +13,7 @@ fn run() {
 
     let code_regex = code_regex.unwrap();
     let matches: Vec<String> = code_regex
-        .find_iter(contents)
+        .find_iter(&contents)
         .map(|m| m.as_str().to_string())
         .collect();
     let mut sum = 0;

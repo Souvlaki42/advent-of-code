@@ -39,9 +39,8 @@ inventory::submit! {
     crate::Solution { year: 2024, day: 4, part: 2, run: run }
 }
 
-fn run() {
-    const INPUT: &str = include_str!("input.txt");
-    let grid = create_grid(INPUT);
+fn run(contents: String) {
+    let grid = create_grid(&contents);
     let mut count = 0;
 
     for x in 0..grid[0].len() {

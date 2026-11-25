@@ -268,11 +268,10 @@ inventory::submit! {
 }
 
 // Original Python code: https://github.com/Gautzilla/AdventOfCode/blob/main/python_AoC/2024/15/2024_15.py
-fn run() {
+fn run(contents: String) {
     // Adjust the input path as needed
-    const INPUT: &str = include_str!("input.txt");
     let t_start = Instant::now();
-    let (p1, p2) = solve(INPUT);
+    let (p1, p2) = solve(&contents);
     let elapsed = t_start.elapsed().as_secs_f64();
 
     println!("{:<20}{:>10}", "Part one", p1);

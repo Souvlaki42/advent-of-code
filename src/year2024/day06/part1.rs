@@ -9,9 +9,11 @@ inventory::submit! {
     crate::Solution { year: 2024, day: 6, part: 1, run: run }
 }
 
-fn run() {
-    const INPUT: &str = include_str!("input.txt");
-    let grid: Vec<Vec<char>> = INPUT.lines().map(|line| line.chars().collect()).collect();
+fn run(contents: String) {
+    let grid: Vec<Vec<char>> = contents
+        .lines()
+        .map(|line| line.chars().collect())
+        .collect();
     let mut count = 1;
     let mut guard = Guard {
         pos: (48, 85), // (48, 85) or (6, 4)

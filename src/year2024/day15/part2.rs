@@ -428,9 +428,8 @@ inventory::submit! {
     crate::Solution { year: 2024, day: 15, part: 2, run: run }
 }
 
-fn run() {
-    const INPUT: &str = include_str!("example.txt");
-    let mut simulation = Simulation::new(INPUT);
+fn run(contents: String) {
+    let mut simulation = Simulation::new(&contents);
     simulation.run();
 
     let (sum, count) = simulation.sum_gps();

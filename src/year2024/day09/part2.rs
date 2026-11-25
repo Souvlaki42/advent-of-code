@@ -31,11 +31,10 @@ inventory::submit! {
     crate::Solution { year: 2024, day: 9, part: 2, run: run }
 }
 
-fn run() {
-    const INPUT: &str = include_str!("input.txt");
+fn run(contents: String) {
     let mut blocks: Vec<String> = Vec::new();
     let mut id = 0;
-    for (i, char) in INPUT.chars().enumerate() {
+    for (i, char) in contents.chars().enumerate() {
         let num = char.to_digit(10).unwrap();
         if i == 0 || i % 2 == 0 {
             for _ in 0..num {

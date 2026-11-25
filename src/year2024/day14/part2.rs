@@ -62,11 +62,10 @@ inventory::submit! {
     crate::Solution { year: 2024, day: 14, part: 2, run: run }
 }
 
-fn run() {
-    const INPUT: &str = include_str!("input.txt");
+fn run(contents: String) {
     const SIZE: (isize, isize) = (101, 103); // IMPORTANT: This changes with input file
 
-    let mut robots = parse_input(INPUT);
+    let mut robots = parse_input(&contents);
     let mut map: HashMap<(isize, isize), usize> = HashMap::new();
 
     for i in 0..SIZE.0 {

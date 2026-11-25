@@ -10,12 +10,11 @@ inventory::submit! {
     crate::Solution { year: 2024, day: 11, part: 2, run: run }
 }
 
-fn run() {
-    const INPUT: &str = include_str!("input.txt");
+fn run(contents: String) {
     const BLINKS: u128 = 75;
     let mut stones: HashMap<u128, u128> = HashMap::new();
 
-    for stone in INPUT
+    for stone in contents
         .lines()
         .next()
         .unwrap()
