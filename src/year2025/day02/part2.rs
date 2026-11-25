@@ -3,8 +3,7 @@ inventory::submit! {
 }
 
 // Optimization: https://www.reddit.com/r/adventofcode/comments/1pcbzbd/2025_day_2_part_2_rust_is_too_elegant/
-fn run() {
-    let contents = include_str!("input.txt");
+fn run(contents: String) {
     let data = contents.lines().next().unwrap();
     let ranges = data.split(",");
     let str_tuples = ranges.filter_map(|range| range.split_once("-"));

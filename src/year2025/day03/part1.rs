@@ -2,8 +2,7 @@ inventory::submit! {
     crate::Solution { year: 2025, day: 3, part: 1, run: run }
 }
 
-fn run() {
-    let contents = include_str!("input.txt");
+fn run(contents: String) {
     let mut total_joltage = 0;
     for line in contents.lines() {
         let mut first = 0;

@@ -4,8 +4,7 @@ inventory::submit! {
     crate::Solution { year: 2025, day: 5, part: 2, run: run }
 }
 
-fn run() {
-    let contents = include_str!("input.txt");
+fn run(contents: String) {
     let mut ranges: Vec<(u64, u64)> = Vec::new();
     let mut fresh_count: u64 = 0;
     let mut max_id: u64 = 0;

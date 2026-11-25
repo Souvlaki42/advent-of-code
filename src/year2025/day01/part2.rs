@@ -2,8 +2,7 @@ inventory::submit! {
     crate::Solution { year: 2025, day: 1, part: 2, run: run }
 }
 
-fn run() {
-    let contents = include_str!("input.txt");
+fn run(contents: String) {
     let lines = contents.lines();
     let mut current: i32 = 50;
     let mut password: u32 = 0;

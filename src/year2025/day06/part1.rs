@@ -4,8 +4,7 @@ inventory::submit! {
     crate::Solution { year: 2025, day: 6, part: 1, run: run }
 }
 
-fn run() {
-    let contents = include_str!("input.txt");
+fn run(contents: String) {
     let mut worksheet: HashMap<usize, (Vec<u128>, char)> = HashMap::new();
     let mut result: u128 = 0;
 

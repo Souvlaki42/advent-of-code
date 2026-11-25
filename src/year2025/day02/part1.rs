@@ -2,8 +2,7 @@ inventory::submit! {
     crate::Solution { year: 2025, day: 2, part: 1, run: run }
 }
 
-fn run() {
-    let contents = include_str!("input.txt");
+fn run(contents: String) {
     let data = contents.lines().next().unwrap();
     let ranges = data.split(",");
     let str_tuples = ranges.filter_map(|range| range.split_once("-"));

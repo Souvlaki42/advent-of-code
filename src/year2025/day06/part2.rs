@@ -4,8 +4,7 @@ inventory::submit! {
     crate::Solution { year: 2025, day: 6, part: 2, run: run }
 }
 
-fn run() {
-    let contents = include_str!("input.txt");
+fn run(contents: String) {
     let mut lines: Vec<&str> = contents.lines().collect();
     let mut normal_numbers: Vec<Vec<String>> = Vec::new();
     let mut worksheet: Vec<(Vec<u128>, char)> = Vec::new();

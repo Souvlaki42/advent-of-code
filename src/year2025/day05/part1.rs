@@ -4,8 +4,7 @@ inventory::submit! {
     crate::Solution { year: 2025, day: 5, part: 1, run: run }
 }
 
-fn run() {
-    let contents = include_str!("input.txt");
+fn run(contents: String) {
     let mut passed_ranges = false;
     let mut available: HashSet<u64> = HashSet::new();
     let mut fresh: HashSet<u64> = HashSet::new();

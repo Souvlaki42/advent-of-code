@@ -25,8 +25,7 @@ impl Vector2<usize> {
     }
 }
 
-fn run() {
-    let contents = include_str!("example.txt");
+fn run(contents: String) {
     let mut map = HashMap::new();
     let mut free_rolls: HashSet<Vector2<usize>> = HashSet::new();
     let mut _accessible_count = 0;
