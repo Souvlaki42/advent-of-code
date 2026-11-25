@@ -1,10 +1,10 @@
-use std::env;
+use std::{env, fs};
 
 pub struct Solution {
     pub year: u32,
     pub day: u32,
     pub part: u32,
-    pub run: fn(),
+    pub run: fn(String),
 }
 
 inventory::collect!(Solution);
@@ -29,8 +29,13 @@ fn main() {
         .find(|s| s.year == year && s.day == day && s.part == part)
     {
         println!("🎄 Running Year {} Day {} Part {}...", year, day, part);
+        let Ok(input_file) = fs::read_to_string(format!("year{year}/day{day:02}/input.txt")) else {
+            eprintln!("Missing input file for {year}'s day {day:02} part {part}");
+            return;
+        };
+
         let start_time = std::time::Instant::now();
-        (solution.run)();
+        (solution.run)(input_file);
         let elapsed_time = start_time.elapsed();
         println!(
             "🎁 Finished in {}.{:03}s",
