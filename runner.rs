@@ -9,8 +9,13 @@ pub struct Solution {
 
 inventory::collect!(Solution);
 
+// To add a year, copy a year's folder, rename it add a mod statement for that year below.
 mod year2024;
 mod year2025;
+
+// Just run `cargo run -- <year> <day> <part>`.
+
+// To add a day, copy a day's folder, rename it, modify the year's `mod.rs` file and change the `inventory` block inside `part1.rs` and `part2.rs` files to register them.
 
 fn main() {
     let args: Vec<String> = env::args().collect();
