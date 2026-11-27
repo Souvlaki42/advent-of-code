@@ -9,6 +9,10 @@ repository = "https://github.com/Souvlaki42/advent-of-code"
 edition = "2024"
 rust-version = "1.92"
 
+[[bin]]
+name = "aoc-rust"
+path = "runner.rs"
+
 [dependencies]
 inventory = "0.3.21"
 itertools = "0.14.0"
